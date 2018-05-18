@@ -1,8 +1,9 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ToastController, ActionSheetController, ModalController } from 'ionic-angular';
 import { Dish } from '../../shared/dish';
 import { Comment } from '../../shared/comment';
 import { FavoriteProvider } from '../../providers/favorite/favorite';
+import { CommentPage} from "../comment/comment";
 
 /**
  * Generated class for the DishdetailPage page.
@@ -27,7 +28,9 @@ export class DishdetailPage {
   constructor(public navCtrl: NavController, public navParams: NavParams,
               @Inject('BaseURL') private BaseURL,
               private favoriteservice: FavoriteProvider,
-              public toastCtrl: ToastController) {
+              public toastCtrl: ToastController,
+              public actionSheetCtrl: ActionSheetController,
+              public modalCtrl: ModalController) {
     this.dish = navParams.get('dish');
     this.numcomments = this.dish.comments.length;
     let total = 0;
@@ -50,4 +53,41 @@ export class DishdetailPage {
       duration: 3000}).present();
   }
 
+  showActions() {
+    let actionSheet = this.actionSheetCtrl.create({
+      title: 'Select Actions',
+      buttons: [
+        {
+          text: 'Add to Favorites',
+          handler: () => {
+            this.addToFavorites();
+          }
+        },{
+          text: 'Add Comment',
+          handler: () => {
+            this.openComment();
+          }
+        },{
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+    actionSheet.present();
+  }
+
+  openComment() {
+    let modal = this.modalCtrl.create(CommentPage);
+
+    modal.onDidDismiss(comment => {
+              // add the current date
+              comment.date = new Date().toISOString();
+              this.dish.comments.push(comment);
+            });
+
+    modal.present();
+  }
 }
