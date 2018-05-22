@@ -26,6 +26,7 @@ export class FavoritesPage implements OnInit{
               public toastCtrl: ToastController,
               private loadingCtrl: LoadingController,
               private alertCtrl: AlertController) {
+
   }
 
   ngOnInit() {
